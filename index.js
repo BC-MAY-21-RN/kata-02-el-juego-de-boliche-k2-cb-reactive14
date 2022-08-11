@@ -1,4 +1,8 @@
 const Boliche = require('./models/Boliche')
 
 const juego = new Boliche();
-juego.juego();
+juego.createScoreboard();
+console.log(juego.marcador);
+//juego.juego();
+
+

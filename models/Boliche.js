@@ -5,11 +5,10 @@ class Boliche {
     this.spare = false;
     this.turnos = 10;
     this.total = 0;
-    this.marcador = this.createScoreboard();
+    this.marcador = [];
   }
 
   createScoreboard(){
-    this.marcador= [ ];
     for (let i = 0; i < this.turnos; i++) {
       (i!=9) ? 
       this.marcador.push({ tiro1: 0, tiro2: 0, resultado: 0})
@@ -87,8 +86,7 @@ class Boliche {
 
   // Guardamos el puntaje obtenido en el turno
   saveScore(i) {
-    this.marcador[i].resultado =
-      this.marcador[i].tiro1 + this.marcador[i].tiro2;
+    this.marcador[i].resultado = this.marcador[i].tiro1 + this.marcador[i].tiro2;
     this.total += this.marcador[i].resultado;
   }
 
