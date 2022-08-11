@@ -58,9 +58,42 @@ class Boliche {
         resultado: 0,
       },
     ];
-    this.lanzamiento = [];
   }
-  // primerTiro( marcador[0] )
+
+  // Ejecuta los lanzamientos de los 10 turnos de un jugador
+  juego() {
+    for (let i = 0; i < this.turnos; i++) {
+      this.primerTiro(this.marcador[i]);
+      // Fue un strike?
+      if (this.strike == true) {
+        this.strikeRules(i);
+        continue;
+      }
+      this.segundoTiro(this.marcador[i]);
+      //guardamos el score
+      this.saveScore(i);
+    }
+    this.printFinalScore();
+  }
+
+  //aplicamos las reglas del strike y spare
+  aplicarReglas() {
+    this.total = 0;
+    for (let i = 0; i < this.marcador.length; i++) {
+      if (i != 9) {
+        // Valida si el turno tuvo un strike o spare
+        if (!this.isAStrike(i)) this.isASpare(i);
+      } else {
+        //strike in last shot
+        this.strikeInLastShot(i);
+        this.spareInLastShot(i);
+      }
+      this.total += this.marcador[i].resultado;
+    }
+  }
+
+  //Lanza el primer tiro de cada turno, se genera un numero aleatorio para su puntaje
+  // Detectamos si fue un Strike
   primerTiro(turno) {
     let lanzamiento = Math.floor(Math.random() * 10) + 1;
     turno.tiro1 = lanzamiento;
@@ -72,6 +105,8 @@ class Boliche {
     }
   }
 
+  //Lanza el segundo tiro de cada turno, se genera un numero aleatorio para su puntaje
+  // Detectamos si fue un spare
   segundoTiro(turno) {
     let lanzamiento = Math.floor(Math.random() * this.bolos) + 1;
     turno.tiro2 = lanzamiento;
@@ -80,74 +115,67 @@ class Boliche {
     this.bolos = 10;
   }
 
-  printScore() {
-    console.log("Turno 1: ", this.marcador[0][2]);
-    console.log("Turno 2: ", this.marcador[1][2]);
-    console.log(this.marcador);
-    console.log("Total: ", this.total);
-  }
-  juego() {
-    for (let i = 0; i < this.turnos; i++) {
-      this.primerTiro(this.marcador[i]);
-      // Fue un strike?
-      if (this.strike == true) {
-        this.marcador[i].resultado = 10;
-        // llamar a funcion para actualizar el marcador
-        this.total += this.marcador[i].resultado;
-        this.strike = false;
-        continue;
-      }
-      this.segundoTiro(this.marcador[i]);
-
-      this.marcador[i].resultado =
-        this.marcador[i].tiro1 + this.marcador[i].tiro2;
-      this.total += this.marcador[i].resultado;
-      // fue un spare?
-    }
-    console.table(this.marcador);
-    console.log(this.total);
-    //ACTUALIZAR EL MARCADOR CON LAS REGLAS
+  //Aplicamos las reglas e imprimimos el marcador y el puntaje
+  printFinalScore() {
     this.aplicarReglas();
     console.log("------------------------");
     console.table(this.marcador);
     console.log(this.total);
   }
 
-  aplicarReglas() {
-    this.total = 0;
-    for (let i = 0; i < this.marcador.length; i++) {
-      if (i != 9) {
-        // IS A STRIKE
-        if (this.marcador[i].tiro1 == 10) {
-          //spareReglas(i)
+  // Guardamos el puntaje obtenido en el turno
+  saveScore(i) {
+    this.marcador[i].resultado =
+      this.marcador[i].tiro1 + this.marcador[i].tiro2;
+    this.total += this.marcador[i].resultado;
+  }
 
-          let bonus = this.marcador[i + 1].tiro1 + this.marcador[i + 1].tiro2;
-          this.marcador[i].resultado += bonus;
-        }
+  // Guardamos el puntaje del strike como un 10
+  strikeRules(i) {
+    this.marcador[i].resultado = 10;
+    this.total += this.marcador[i].resultado;
+    this.strike = false;
+  }
 
-        // IS A SPARE
-        if (this.marcador[i].tiro1 + this.marcador[i].tiro2 == 10) {
-          let bonus = this.marcador[i + 1].tiro1;
-          this.marcador[i].resultado += bonus;
-        }
-      }else{
-        //strike in last shot
-        if (this.marcador[i].tiro1 == 10) {
-          
-          this.marcador[i].tiro3 = Math.floor(Math.random() * 10) + 1;
-          let bonus = this.marcador[i].tiro3 + this.marcador[i].tiro1
-          this.marcador[i].resultado = bonus;
+  //Aplicamos las reglas de un strike en el ultimo tiro
+  //Si hay un strike permite generar un ultimo tiro
+  strikeInLastShot(i) {
+    if (this.marcador[i].tiro1 == 10) {
+      this.marcador[i].tiro3 = Math.floor(Math.random() * 10) + 1;
+      let bonus = this.marcador[i].tiro3 + this.marcador[i].tiro1;
+      this.marcador[i].resultado = bonus;
+    }
+  }
 
-          //spare in last shot
-        }else if(this.marcador[i].tiro1 + this.marcador[i].tiro2 == 10){
+  // Reglas del spare en el ultimo turno
+  // Si hay un spare se permite hacer un 3 tiro
+  spareInLastShot(i) {
+    if (this.marcador[i].tiro1 + this.marcador[i].tiro2 == 10) {
+      this.marcador[i].tiro3 = Math.floor(Math.random() * 10) + 1;
+      let bonus =
+        this.marcador[i].tiro3 +
+        this.marcador[i].tiro2 +
+        this.marcador[i].tiro1;
+      this.marcador[i].resultado = bonus;
+    }
+  }
 
-          this.marcador[i].tiro3 = Math.floor(Math.random() * 10) + 1;
-          let bonus = this.marcador[i].tiro3 + this.marcador[i].tiro2 + this.marcador[i].tiro1;
-          this.marcador[i].resultado = bonus;
-        
-        }
-      }
-      this.total += this.marcador[i].resultado;
+  // Cuando detectemos un Strike, sumamos los bonos a el turno correspondiente
+  isAStrike(i) {
+    if (this.marcador[i].tiro1 == 10) {
+      let bonus = this.marcador[i + 1].tiro1 + this.marcador[i + 1].tiro2;
+      this.marcador[i].resultado += bonus;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //Si la suma de los 2 tiros es 10 (spare) se le suma el resultado del primer tiro del siguiente turno
+  isASpare(i) {
+    if (this.marcador[i].tiro1 + this.marcador[i].tiro2 == 10) {
+      let bonus = this.marcador[i + 1].tiro1;
+      this.marcador[i].resultado += bonus;
     }
   }
 }
