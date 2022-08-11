@@ -4,7 +4,7 @@
   "description": "![BrightCoders Logo](img/logo-bc.png)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/BC-MAY-21-RN/kata-02-el-juego-de-boliche-k2-cb-reactive14#readme",
   "devDependencies": {
-    "eslint": "^8.21.0"
+    "eslint": "^8.21.0",
+    "jest": "^28.1.3"
   }
 }

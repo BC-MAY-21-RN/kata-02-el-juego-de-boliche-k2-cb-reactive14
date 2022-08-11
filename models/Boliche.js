@@ -5,59 +5,16 @@ class Boliche {
     this.spare = false;
     this.turnos = 10;
     this.total = 0;
-    this.marcador = [
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        resultado: 0,
-      },
-      {
-        tiro1: 0,
-        tiro2: 0,
-        tiro3: 0,
-        resultado: 0,
-      },
-    ];
+    this.marcador = this.createScoreboard();
+  }
+
+  createScoreboard(){
+    this.marcador= [ ];
+    for (let i = 0; i < this.turnos; i++) {
+      (i!=9) ? 
+      this.marcador.push({ tiro1: 0, tiro2: 0, resultado: 0})
+      : this.marcador.push({tiro1: 0, tiro2: 0, tiro3: 0, resultado: 0});
+    }
   }
 
   // Ejecuta los lanzamientos de los 10 turnos de un jugador
@@ -84,12 +41,17 @@ class Boliche {
         // Valida si el turno tuvo un strike o spare
         if (!this.isAStrike(i)) this.isASpare(i);
       } else {
+        this.lastShot(i)
         //strike in last shot
-        this.strikeInLastShot(i);
-        this.spareInLastShot(i);
+       
       }
       this.total += this.marcador[i].resultado;
     }
+  }
+
+  lastShot(i){
+    this.strikeInLastShot(i);
+    this.spareInLastShot(i);
   }
 
   //Lanza el primer tiro de cada turno, se genera un numero aleatorio para su puntaje
